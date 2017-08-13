@@ -2,9 +2,9 @@
   "name": "git-fixtures",
   "version": "0.0.0",
   "description": "Helpers for using git with fixtures in temp folders",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "eslint src"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/kellyselden/git-fixtures/issues"
   },
-  "homepage": "https://github.com/kellyselden/git-fixtures#readme"
+  "homepage": "https://github.com/kellyselden/git-fixtures#readme",
+  "dependencies": {
+    "debug": "^3.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.4.1",
+    "eslint-config-sane": "^0.1.0"
+  }
 }

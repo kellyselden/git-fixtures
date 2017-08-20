@@ -33,5 +33,22 @@ module.exports = {
     run('git config mergetool.keepBackup false', {
       cwd
     });
+  },
+
+  commit(options) {
+    let tag = options.tag || 'v1';
+    let cwd = options.cwd;
+
+    run('git add -A', {
+      cwd
+    });
+
+    run(`git commit -m "${tag}"`, {
+      cwd
+    });
+
+    run(`git tag ${tag}`, {
+      cwd
+    });
   }
 };

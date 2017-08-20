@@ -11,7 +11,9 @@ function run(command, options) {
 }
 
 module.exports = {
-  gitInit(cwd) {
+  gitInit(options) {
+    let cwd = typeof options === 'object' ? options.cwd : options;
+
     run('git init', {
       cwd
     });

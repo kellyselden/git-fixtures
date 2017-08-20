@@ -12,7 +12,7 @@ function run(command, options) {
 
 module.exports = {
   gitInit(options) {
-    let cwd = typeof options === 'object' ? options.cwd : options;
+    let cwd = options.cwd;
 
     run('git init', {
       cwd

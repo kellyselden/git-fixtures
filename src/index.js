@@ -36,19 +36,22 @@ module.exports = {
   },
 
   commit(options) {
-    let tag = options.tag || 'v1';
+    let m = options.m || 'initial commit';
+    let tag = options.tag;
     let cwd = options.cwd;
 
     run('git add -A', {
       cwd
     });
 
-    run(`git commit -m "${tag}"`, {
+    run(`git commit -m "${m}"`, {
       cwd
     });
 
-    run(`git tag ${tag}`, {
-      cwd
-    });
+    if (tag) {
+      run(`git tag ${tag}`, {
+        cwd
+      });
+    }
   }
 };

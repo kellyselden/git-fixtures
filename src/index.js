@@ -56,6 +56,62 @@ module.exports = {
     }
   },
 
+  processIo(options) {
+    let ps = options.ps;
+    let cwd = options.cwd;
+    let expect = options.expect;
+
+    return new Promise(resolve => {
+      ps.stdout.on('data', data => {
+        let str = data.toString();
+        if (str.includes('Normal merge conflict')) {
+          ps.stdin.write(':%diffg 3\n');
+          ps.stdin.write(':wqa\n');
+        } else if (str.includes('Deleted merge conflict')) {
+          ps.stdin.write('d\n');
+        }
+      });
+
+      let stderr = '';
+
+      ps.stderr.on('data', data => {
+        stderr += data.toString();
+      });
+
+      ps.stderr.pipe(process.stdout);
+
+      ps.on('exit', () => {
+        let status = run('git status', {
+          cwd
+        });
+
+        expect(stderr).to.not.contain('Error:');
+        expect(stderr).to.not.contain('fatal:');
+        expect(stderr).to.not.contain('Command failed');
+
+        let result = run('git log -1', {
+          cwd
+        });
+
+        // verify it is not committed
+        expect(result).to.contain('Author: Your Name <you@example.com>');
+        expect(result).to.contain('add files');
+
+        result = run('git branch', {
+          cwd
+        });
+
+        // verify branch was deleted
+        expect(result.trim()).to.match(/\* foo\r?\n {2}master/);
+
+        resolve({
+          status,
+          stderr
+        });
+      });
+    });
+  },
+
   fixtureCompare(options) {
     let expect = options.expect;
     let actual = options.actual;

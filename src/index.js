@@ -11,6 +11,63 @@ function run(command, options) {
   return result;
 }
 
+function processIo(options) {
+  let ps = options.ps;
+  let cwd = options.cwd;
+  let commitMessage = options.commitMessage;
+  let expect = options.expect;
+
+  return new Promise(resolve => {
+    ps.stdout.on('data', data => {
+      let str = data.toString();
+      if (str.includes('Normal merge conflict')) {
+        ps.stdin.write(':%diffg 3\n');
+        ps.stdin.write(':wqa\n');
+      } else if (str.includes('Deleted merge conflict')) {
+        ps.stdin.write('d\n');
+      }
+    });
+
+    let stderr = '';
+
+    ps.stderr.on('data', data => {
+      stderr += data.toString();
+    });
+
+    ps.stderr.pipe(process.stdout);
+
+    ps.on('exit', () => {
+      let status = run('git status', {
+        cwd
+      });
+
+      expect(stderr).to.not.contain('Error:');
+      expect(stderr).to.not.contain('fatal:');
+      expect(stderr).to.not.contain('Command failed');
+
+      let result = run('git log -1', {
+        cwd
+      });
+
+      // verify it is not committed
+      expect(result).to.contain('Author: Your Name <you@example.com>');
+      expect(result).to.contain(commitMessage);
+
+      result = run('git branch', {
+        cwd
+      });
+
+      // verify branch was deleted
+      expect(result.trim()).to.match(/\* foo\r?\n {2}master/);
+
+      resolve({
+        status,
+        stderr
+      });
+    });
+  });
+}
+
 module.exports = {
   gitInit(options) {
     let cwd = options.cwd;
@@ -56,62 +113,26 @@ module.exports = {
     }
   },
 
-  processIo(options) {
-    let ps = options.ps;
+  processBin(options) {
+    let args = options.args;
     let cwd = options.cwd;
     let commitMessage = options.commitMessage;
     let expect = options.expect;
 
-    return new Promise(resolve => {
-      ps.stdout.on('data', data => {
-        let str = data.toString();
-        if (str.includes('Normal merge conflict')) {
-          ps.stdin.write(':%diffg 3\n');
-          ps.stdin.write(':wqa\n');
-        } else if (str.includes('Deleted merge conflict')) {
-          ps.stdin.write('d\n');
-        }
-      });
+    let ps = cp.spawn('node', args, {
+      cwd,
+      env: process.env
+    });
 
-      let stderr = '';
-
-      ps.stderr.on('data', data => {
-        stderr += data.toString();
-      });
-
-      ps.stderr.pipe(process.stdout);
-
-      ps.on('exit', () => {
-        let status = run('git status', {
-          cwd
-        });
-
-        expect(stderr).to.not.contain('Error:');
-        expect(stderr).to.not.contain('fatal:');
-        expect(stderr).to.not.contain('Command failed');
-
-        let result = run('git log -1', {
-          cwd
-        });
-
-        // verify it is not committed
-        expect(result).to.contain('Author: Your Name <you@example.com>');
-        expect(result).to.contain(commitMessage);
-
-        result = run('git branch', {
-          cwd
-        });
-
-        // verify branch was deleted
-        expect(result.trim()).to.match(/\* foo\r?\n {2}master/);
-
-        resolve({
-          status,
-          stderr
-        });
-      });
+    return processIo({
+      ps,
+      cwd,
+      commitMessage,
+      expect
     });
   },
+
+  processIo,
 
   fixtureCompare(options) {
     let expect = options.expect;

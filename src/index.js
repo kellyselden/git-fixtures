@@ -1,6 +1,7 @@
 'use strict';
 
 const cp = require('child_process');
+const fixturify = require('fixturify');
 const debug = require('debug')('git-fixtures');
 
 function run(command, options) {
@@ -53,5 +54,19 @@ module.exports = {
         cwd
       });
     }
+  },
+
+  fixtureCompare(options) {
+    let expect = options.expect;
+    let actual = options.actual;
+    let expected = options.expected;
+
+    actual = fixturify.readSync(actual);
+    expected = fixturify.readSync(expected);
+
+    delete actual['.git'];
+    delete actual['node_modules'];
+
+    expect(actual).to.deep.equal(expected);
   }
 };

@@ -17,7 +17,8 @@
   },
   "homepage": "https://github.com/kellyselden/git-fixtures#readme",
   "dependencies": {
-    "debug": "^3.0.0"
+    "debug": "^3.0.0",
+    "fixturify": "^0.3.3"
   },
   "devDependencies": {
     "eslint": "^4.4.1",

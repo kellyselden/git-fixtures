@@ -59,6 +59,7 @@ module.exports = {
   processIo(options) {
     let ps = options.ps;
     let cwd = options.cwd;
+    let commitMessage = options.commitMessage;
     let expect = options.expect;
 
     return new Promise(resolve => {
@@ -95,7 +96,7 @@ module.exports = {
 
         // verify it is not committed
         expect(result).to.contain('Author: Your Name <you@example.com>');
-        expect(result).to.contain('add files');
+        expect(result).to.contain(commitMessage);
 
         result = run('git branch', {
           cwd

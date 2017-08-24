@@ -1,9 +1,13 @@
 'use strict';
 
 const path = require('path');
+const fs = require('fs');
 const cp = require('child_process');
 const fixturify = require('fixturify');
 const debug = require('debug')('git-fixtures');
+
+const branchName = 'foo';
+const branchRegExp = new RegExp(`* ${branchName}\r?\n {2}master`);
 
 function run(command, options) {
   debug(command);
@@ -59,7 +63,7 @@ function processIo(options) {
       });
 
       // verify branch was deleted
-      expect(result.trim()).to.match(/\* foo\r?\n {2}master/);
+      expect(result.trim()).to.match(branchRegExp);
 
       resolve({
         status,
@@ -111,6 +115,20 @@ module.exports = {
       run(`git tag ${tag}`, {
         cwd
       });
+    }
+  },
+
+  postCommit(options) {
+    let cwd = options.cwd;
+    let dirty = options.dirty;
+
+    // non-master branch test
+    run(`git checkout -b ${branchName}`, {
+      cwd
+    });
+
+    if (dirty) {
+      fs.writeFileSync(path.join(cwd, 'a-random-new-file'), 'bar');
     }
   },
 

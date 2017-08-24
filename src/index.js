@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const cp = require('child_process');
 const fixturify = require('fixturify');
 const debug = require('debug')('git-fixtures');
@@ -114,10 +115,15 @@ module.exports = {
   },
 
   processBin(options) {
-    let args = options.args;
+    let binFile = options.binFile;
+    let args = options.args || [];
     let cwd = options.cwd;
     let commitMessage = options.commitMessage;
     let expect = options.expect;
+
+    binFile = path.join(process.cwd(), 'bin', binFile);
+
+    args = [binFile].concat(args);
 
     let ps = cp.spawn('node', args, {
       cwd,

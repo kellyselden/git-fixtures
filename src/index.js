@@ -16,6 +16,45 @@ function run(command, options) {
   return result;
 }
 
+function processExit(options) {
+  let promise = options.promise;
+  let cwd = options.cwd;
+  let commitMessage = options.commitMessage;
+  let expect = options.expect;
+
+  return promise.catch(stderr => {
+    expect(stderr).to.not.contain('Error:');
+    expect(stderr).to.not.contain('fatal:');
+    expect(stderr).to.not.contain('Command failed');
+
+    return stderr;
+  }).then(stderr => {
+    let result = run('git log -1', {
+      cwd
+    });
+
+    // verify it is not committed
+    expect(result).to.contain('Author: Your Name <you@example.com>');
+    expect(result).to.contain(commitMessage);
+
+    result = run('git branch', {
+      cwd
+    });
+
+    // verify branch was deleted
+    expect(result.trim()).to.match(branchRegExp);
+
+    let status = run('git status', {
+      cwd
+    });
+
+    return {
+      status,
+      stderr
+    };
+  });
+}
+
 function processIo(options) {
   let ps = options.ps;
   let cwd = options.cwd;
@@ -42,33 +81,12 @@ function processIo(options) {
     ps.stderr.pipe(process.stdout);
 
     ps.on('exit', () => {
-      let status = run('git status', {
-        cwd
-      });
-
-      expect(stderr).to.not.contain('Error:');
-      expect(stderr).to.not.contain('fatal:');
-      expect(stderr).to.not.contain('Command failed');
-
-      let result = run('git log -1', {
-        cwd
-      });
-
-      // verify it is not committed
-      expect(result).to.contain('Author: Your Name <you@example.com>');
-      expect(result).to.contain(commitMessage);
-
-      result = run('git branch', {
-        cwd
-      });
-
-      // verify branch was deleted
-      expect(result.trim()).to.match(branchRegExp);
-
-      resolve({
-        status,
-        stderr
-      });
+      processExit({
+        promise: Promise.reject(stderr),
+        cwd,
+        commitMessage,
+        expect
+      }).then(resolve);
     });
   });
 }
@@ -157,6 +175,8 @@ module.exports = {
   },
 
   processIo,
+
+  processExit,
 
   fixtureCompare(options) {
     let expect = options.expect;

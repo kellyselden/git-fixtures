@@ -22,13 +22,13 @@ function processExit(options) {
   let commitMessage = options.commitMessage;
   let expect = options.expect;
 
-  return promise.catch(stderr => {
+  return promise.then(result => ({ result })).catch(stderr => {
     expect(stderr).to.not.contain('Error:');
     expect(stderr).to.not.contain('fatal:');
     expect(stderr).to.not.contain('Command failed');
 
-    return stderr;
-  }).then(stderr => {
+    return { stderr };
+  }).then(obj => {
     let result = run('git log -1', {
       cwd
     });
@@ -48,10 +48,9 @@ function processExit(options) {
       cwd
     });
 
-    return {
-      status,
-      stderr
-    };
+    obj.status = status;
+
+    return obj;
   });
 }
 

@@ -7,7 +7,7 @@ const fixturify = require('fixturify');
 const debug = require('debug')('git-fixtures');
 
 const branchName = 'foo';
-const branchRegExp = new RegExp(`\\* ${branchName}\\r?\\n {2}master`);
+const branchRegExp = new RegExp(`^\\* ${branchName}\\r?\\n {2}master$`);
 
 function run(command, options) {
   debug(command);

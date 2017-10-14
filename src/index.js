@@ -44,7 +44,7 @@ function processExit(options) {
     // verify branch was deleted
     expect(result.trim()).to.match(branchRegExp);
 
-    let status = run('git status', {
+    let status = run('git status --porcelain', {
       cwd
     });
 

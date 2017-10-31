@@ -20,6 +20,7 @@ function processExit(options) {
   let promise = options.promise;
   let cwd = options.cwd;
   let commitMessage = options.commitMessage;
+  let noGit = options.noGit;
   let expect = options.expect;
 
   return promise.then(result => ({ result })).catch(stderr => {
@@ -29,26 +30,28 @@ function processExit(options) {
 
     return { stderr };
   }).then(obj => {
-    let result = run('git log -1', {
-      cwd
-    });
+    if (!noGit) {
+      let result = run('git log -1', {
+        cwd
+      });
 
-    // verify it is not committed
-    expect(result).to.contain('Author: Your Name <you@example.com>');
-    expect(result).to.contain(commitMessage);
+      // verify it is not committed
+      expect(result).to.contain('Author: Your Name <you@example.com>');
+      expect(result).to.contain(commitMessage);
 
-    result = run('git branch', {
-      cwd
-    });
+      result = run('git branch', {
+        cwd
+      });
 
-    // verify branch was deleted
-    expect(result.trim()).to.match(branchRegExp);
+      // verify branch was deleted
+      expect(result.trim()).to.match(branchRegExp);
 
-    let status = run('git status --porcelain', {
-      cwd
-    });
+      let status = run('git status --porcelain', {
+        cwd
+      });
 
-    obj.status = status;
+      obj.status = status;
+    }
 
     return obj;
   });

@@ -16,6 +16,10 @@ function run(command, options) {
   return result;
 }
 
+function gitStatus(options) {
+  return run('git status --porcelain', options);
+}
+
 function processExit(options) {
   let promise = options.promise;
   let cwd = options.cwd;
@@ -46,7 +50,7 @@ function processExit(options) {
       // verify branch was deleted
       expect(result.trim()).to.match(branchRegExp);
 
-      let status = run('git status --porcelain', {
+      let status = gitStatus({
         cwd
       });
 
@@ -127,9 +131,14 @@ module.exports = {
       cwd
     });
 
-    run(`git commit -m "${m}"`, {
+    // allow no changes between tags
+    if (gitStatus({
       cwd
-    });
+    })) {
+      run(`git commit -m "${m}"`, {
+        cwd
+      });
+    }
 
     if (tag) {
       run(`git tag ${tag}`, {

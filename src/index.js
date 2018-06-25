@@ -20,13 +20,13 @@ function gitStatus(options) {
   return run('git status --porcelain', options);
 }
 
-function processExit(options) {
-  let promise = options.promise;
-  let cwd = options.cwd;
-  let commitMessage = options.commitMessage;
-  let noGit = options.noGit;
-  let expect = options.expect;
-
+function processExit({
+  promise,
+  cwd,
+  commitMessage,
+  noGit,
+  expect
+}) {
   return promise.then(result => ({ result })).catch(stderr => {
     expect(stderr).to.not.contain('Error:');
     expect(stderr).to.not.contain('fatal:');
@@ -61,12 +61,12 @@ function processExit(options) {
   });
 }
 
-function processIo(options) {
-  let ps = options.ps;
-  let cwd = options.cwd;
-  let commitMessage = options.commitMessage;
-  let expect = options.expect;
-
+function processIo({
+  ps,
+  cwd,
+  commitMessage,
+  expect
+}) {
   return new Promise(resolve => {
     ps.stdout.on('data', data => {
       let str = data.toString();
@@ -98,9 +98,9 @@ function processIo(options) {
 }
 
 module.exports = {
-  gitInit(options) {
-    let cwd = options.cwd;
-
+  gitInit({
+    cwd
+  }) {
     run('git init', {
       cwd
     });
@@ -122,11 +122,11 @@ module.exports = {
     });
   },
 
-  commit(options) {
-    let m = options.m || 'initial commit';
-    let tag = options.tag;
-    let cwd = options.cwd;
-
+  commit({
+    m = 'initial commit',
+    tag,
+    cwd
+  }) {
     run('git add -A', {
       cwd
     });
@@ -147,10 +147,10 @@ module.exports = {
     }
   },
 
-  postCommit(options) {
-    let cwd = options.cwd;
-    let dirty = options.dirty;
-
+  postCommit({
+    cwd,
+    dirty
+  }) {
     // non-master branch test
     run(`git checkout -b ${branchName}`, {
       cwd
@@ -161,13 +161,13 @@ module.exports = {
     }
   },
 
-  processBin(options) {
-    let binFile = options.binFile;
-    let args = options.args || [];
-    let cwd = options.cwd;
-    let commitMessage = options.commitMessage;
-    let expect = options.expect;
-
+  processBin({
+    binFile,
+    args = [],
+    cwd,
+    commitMessage,
+    expect
+  }) {
     binFile = path.join(process.cwd(), 'bin', binFile);
 
     args = [binFile].concat(args);
@@ -189,11 +189,11 @@ module.exports = {
 
   processExit,
 
-  fixtureCompare(options) {
-    let expect = options.expect;
-    let actual = options.actual;
-    let expected = options.expected;
-
+  fixtureCompare({
+    expect,
+    actual,
+    expected
+  }) {
     actual = fixturify.readSync(actual);
     expected = fixturify.readSync(expected);
 

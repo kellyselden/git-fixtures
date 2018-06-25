@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/kellyselden/git-fixtures/issues"
   },
-  "homepage": "https://github.com/kellyselden/git-fixtures#readme",,
+  "homepage": "https://github.com/kellyselden/git-fixtures#readme",
   "engines": {
     "node": ">=6"
   },

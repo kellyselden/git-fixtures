@@ -177,12 +177,17 @@ module.exports = {
       env: process.env
     });
 
-    return processIo({
+    let promise = processIo({
       ps,
       cwd,
       commitMessage,
       expect
     });
+
+    return {
+      ps,
+      promise
+    };
   },
 
   processIo,

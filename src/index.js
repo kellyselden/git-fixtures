@@ -28,6 +28,10 @@ function processExit({
   expect
 }) {
   return promise.then(result => ({ result })).catch(stderr => {
+    if (typeof stderr !== 'string') {
+      throw stderr;
+    }
+
     expect(stderr).to.not.contain('Error:');
     expect(stderr).to.not.contain('fatal:');
     expect(stderr).to.not.contain('Command failed');

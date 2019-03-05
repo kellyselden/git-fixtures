@@ -20,8 +20,11 @@
     "node": ">=6"
   },
   "dependencies": {
+    "co": "^4.6.0",
     "debug": "^4.0.0",
-    "fixturify": "^0.3.3"
+    "fixturify": "^0.3.3",
+    "fs-extra": "^7.0.1",
+    "tmp": "0.0.33"
   },
   "devDependencies": {
     "eslint": "^5.0.0",

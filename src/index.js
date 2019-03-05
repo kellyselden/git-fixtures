@@ -20,6 +20,134 @@ function gitStatus(options) {
   return run('git status --porcelain', options);
 }
 
+function gitInit({
+  cwd
+}) {
+  run('git init', {
+    cwd
+  });
+
+  run('git config user.email "you@example.com"', {
+    cwd
+  });
+
+  run('git config user.name "Your Name"', {
+    cwd
+  });
+
+  run('git config merge.tool "vimdiff"', {
+    cwd
+  });
+
+  run('git config mergetool.keepBackup false', {
+    cwd
+  });
+}
+
+function commit({
+  m = 'initial commit',
+  tag,
+  cwd
+}) {
+  run('git add -A', {
+    cwd
+  });
+
+  // allow no changes between tags
+  if (gitStatus({
+    cwd
+  })) {
+    run(`git commit -m "${m}"`, {
+      cwd
+    });
+  }
+
+  if (tag) {
+    run(`git tag ${tag}`, {
+      cwd
+    });
+  }
+}
+
+function postCommit({
+  cwd,
+  dirty
+}) {
+  // non-master branch test
+  run(`git checkout -b ${branchName}`, {
+    cwd
+  });
+
+  if (dirty) {
+    fs.writeFileSync(path.join(cwd, 'a-random-new-file'), 'bar');
+  }
+}
+
+function processBin({
+  binFile,
+  args = [],
+  cwd,
+  commitMessage,
+  expect
+}) {
+  binFile = path.join(process.cwd(), 'bin', binFile);
+
+  args = [binFile].concat(args);
+
+  let ps = cp.spawn('node', args, {
+    cwd,
+    env: process.env
+  });
+
+  let promise = processIo({
+    ps,
+    cwd,
+    commitMessage,
+    expect
+  });
+
+  return {
+    ps,
+    promise
+  };
+}
+
+function processIo({
+  ps,
+  cwd,
+  commitMessage,
+  expect
+}) {
+  return new Promise(resolve => {
+    ps.stdout.on('data', data => {
+      let str = data.toString();
+      if (str.includes('Normal merge conflict')) {
+        ps.stdin.write(':%diffg 3\n');
+        ps.stdin.write(':wqa\n');
+      } else if (str.includes('Deleted merge conflict')) {
+        ps.stdin.write('d\n');
+      }
+    });
+
+    let stderr = '';
+
+    ps.stderr.on('data', data => {
+      stderr += data.toString();
+    });
+
+    ps.stderr.pipe(process.stdout);
+
+    ps.on('exit', () => {
+      processExit({
+        promise: Promise.reject(stderr),
+        cwd,
+        commitMessage,
+        expect
+      }).then(resolve);
+    });
+  });
+}
+
 function processExit({
   promise,
   cwd,
@@ -65,150 +193,26 @@ function processExit({
   });
 }
 
-function processIo({
-  ps,
-  cwd,
-  commitMessage,
-  expect
+function fixtureCompare({
+  expect,
+  actual,
+  expected
 }) {
-  return new Promise(resolve => {
-    ps.stdout.on('data', data => {
-      let str = data.toString();
-      if (str.includes('Normal merge conflict')) {
-        ps.stdin.write(':%diffg 3\n');
-        ps.stdin.write(':wqa\n');
-      } else if (str.includes('Deleted merge conflict')) {
-        ps.stdin.write('d\n');
-      }
-    });
+  actual = fixturify.readSync(actual);
+  expected = fixturify.readSync(expected);
 
-    let stderr = '';
+  delete actual['.git'];
+  delete actual['node_modules'];
 
-    ps.stderr.on('data', data => {
-      stderr += data.toString();
-    });
-
-    ps.stderr.pipe(process.stdout);
-
-    ps.on('exit', () => {
-      processExit({
-        promise: Promise.reject(stderr),
-        cwd,
-        commitMessage,
-        expect
-      }).then(resolve);
-    });
-  });
+  expect(actual).to.deep.equal(expected);
 }
 
 module.exports = {
-  gitInit({
-    cwd
-  }) {
-    run('git init', {
-      cwd
-    });
-
-    run('git config user.email "you@example.com"', {
-      cwd
-    });
-
-    run('git config user.name "Your Name"', {
-      cwd
-    });
-
-    run('git config merge.tool "vimdiff"', {
-      cwd
-    });
-
-    run('git config mergetool.keepBackup false', {
-      cwd
-    });
-  },
-
-  commit({
-    m = 'initial commit',
-    tag,
-    cwd
-  }) {
-    run('git add -A', {
-      cwd
-    });
-
-    // allow no changes between tags
-    if (gitStatus({
-      cwd
-    })) {
-      run(`git commit -m "${m}"`, {
-        cwd
-      });
-    }
-
-    if (tag) {
-      run(`git tag ${tag}`, {
-        cwd
-      });
-    }
-  },
-
-  postCommit({
-    cwd,
-    dirty
-  }) {
-    // non-master branch test
-    run(`git checkout -b ${branchName}`, {
-      cwd
-    });
-
-    if (dirty) {
-      fs.writeFileSync(path.join(cwd, 'a-random-new-file'), 'bar');
-    }
-  },
-
-  processBin({
-    binFile,
-    args = [],
-    cwd,
-    commitMessage,
-    expect
-  }) {
-    binFile = path.join(process.cwd(), 'bin', binFile);
-
-    args = [binFile].concat(args);
-
-    let ps = cp.spawn('node', args, {
-      cwd,
-      env: process.env
-    });
-
-    let promise = processIo({
-      ps,
-      cwd,
-      commitMessage,
-      expect
-    });
-
-    return {
-      ps,
-      promise
-    };
-  },
-
+  gitInit,
+  commit,
+  postCommit,
+  processBin,
   processIo,
-
   processExit,
-
-  fixtureCompare({
-    expect,
-    actual,
-    expected
-  }) {
-    actual = fixturify.readSync(actual);
-    expected = fixturify.readSync(expected);
-
-    delete actual['.git'];
-    delete actual['node_modules'];
-
-    expect(actual).to.deep.equal(expected);
-  }
+  fixtureCompare
 };

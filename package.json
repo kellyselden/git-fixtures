@@ -27,5 +27,8 @@
     "eslint": "^5.0.0",
     "eslint-config-sane": "^0.6.0",
     "eslint-plugin-prefer-let": "^1.0.1"
-  }
+  },
+  "files": [
+    "src"
+  ]
 }

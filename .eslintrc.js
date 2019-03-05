@@ -3,7 +3,10 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2017
   },
-  extends: 'sane',
+  extends: [
+    'sane',
+    'plugin:node/recommended'
+  ],
   env: {
     es6: true,
     node: true

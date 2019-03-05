@@ -1,9 +1,11 @@
 'use strict';
 
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 const cp = require('child_process');
 const fixturify = require('fixturify');
+const tmp = require('tmp');
+const co = require('co');
 const debug = require('debug')('git-fixtures');
 
 const branchName = 'foo';
@@ -82,6 +84,45 @@ function postCommit({
     fs.writeFileSync(path.join(cwd, 'a-random-new-file'), 'bar');
   }
 }
+
+const buildTmp = co.wrap(function* buildTmp({
+  fixturesPath,
+  commitMessage,
+  dirty,
+  subDir = ''
+}) {
+  let tmpPath = yield new Promise((resolve, reject) => {
+    tmp.dir((err, path) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(path);
+      }
+    });
+  });
+
+  gitInit({
+    cwd: tmpPath
+  });
+
+  let tmpSubPath = path.join(tmpPath, subDir);
+
+  yield fs.ensureDir(tmpSubPath);
+
+  yield fs.copy(fixturesPath, tmpSubPath);
+
+  commit({
+    m: commitMessage,
+    cwd: tmpPath
+  });
+
+  postCommit({
+    cwd: tmpPath,
+    dirty
+  });
+
+  return tmpSubPath;
+});
 
 function processBin({
   binFile,
@@ -211,6 +252,7 @@ module.exports = {
   gitInit,
   commit,
   postCommit,
+  buildTmp,
   processBin,
   processIo,
   processExit,

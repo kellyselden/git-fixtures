@@ -6,21 +6,15 @@ const cp = require('child_process');
 const fixturify = require('fixturify');
 const tmp = require('tmp');
 const co = require('co');
-const debug = require('debug')('git-fixtures');
+const {
+  run,
+  gitStatus,
+  isGitClean,
+  gitRemoveAll
+} = require('git-diff-apply');
 
 const branchName = 'foo';
 const branchRegExp = new RegExp(`^\\* ${branchName}\\r?\\n {2}master$`);
-
-function run(command, options) {
-  debug(command);
-  let result = cp.execSync(command, options).toString();
-  debug(result);
-  return result;
-}
-
-function gitStatus(options) {
-  return run('git status --porcelain', options);
-}
 
 function gitInit({
   cwd
@@ -56,7 +50,7 @@ function commit({
   });
 
   // allow no changes between tags
-  if (gitStatus({
+  if (!isGitClean({
     cwd
   })) {
     run(`git commit -m "${m}"`, {
@@ -87,8 +81,8 @@ function postCommit({
 
 const buildTmp = co.wrap(function* buildTmp({
   fixturesPath,
-  commitMessage,
   dirty,
+  noGit,
   subDir = ''
 }) {
   let tmpPath = yield new Promise((resolve, reject) => {
@@ -107,19 +101,36 @@ const buildTmp = co.wrap(function* buildTmp({
 
   let tmpSubPath = path.join(tmpPath, subDir);
 
-  yield fs.ensureDir(tmpSubPath);
+  let tags = fs.readdirSync(fixturesPath);
 
-  yield fs.copy(fixturesPath, tmpSubPath);
+  for (let i = 0; i < tags.length; i++) {
+    if (i !== 0) {
+      gitRemoveAll({
+        cwd: tmpPath
+      });
+    }
 
-  commit({
-    m: commitMessage,
-    cwd: tmpPath
-  });
+    let tag = tags[i];
+
+    yield fs.ensureDir(tmpSubPath);
+
+    yield fs.copy(path.join(fixturesPath, tag), tmpSubPath);
+
+    commit({
+      m: tag,
+      tag,
+      cwd: tmpPath
+    });
+  }
 
   postCommit({
     cwd: tmpPath,
     dirty
   });
+
+  if (noGit) {
+    yield fs.remove(path.join(tmpSubPath, '.git'));
+  }
 
   return tmpSubPath;
 });

@@ -105,7 +105,7 @@ const buildTmp = co.wrap(function* buildTmp({
 
   for (let i = 0; i < tags.length; i++) {
     if (i !== 0) {
-      gitRemoveAll({
+      yield gitRemoveAll({
         cwd: tmpPath
       });
     }

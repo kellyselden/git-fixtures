@@ -23,7 +23,7 @@
     "co": "^4.6.0",
     "fixturify": "^0.3.3",
     "fs-extra": "^7.0.1",
-    "git-diff-apply": "^0.14.0",
+    "git-diff-apply": "^0.15.0",
     "tmp": "0.0.33"
   },
   "devDependencies": {

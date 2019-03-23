@@ -250,7 +250,7 @@ function fixtureCompare({
   actual,
   expected
 }) {
-  actual = fixturify.readSync(actual);
+  actual = fixturify.readSync(actual, { ignoreEmptyDirs: true });
   expected = fixturify.readSync(expected);
 
   delete actual['.git'];

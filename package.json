@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "co": "^4.6.0",
-    "fixturify": "^1.0.1",
+    "fixturify": "^1.1.0",
     "fs-extra": "^7.0.1",
     "git-diff-apply": "^0.15.0",
     "tmp": "0.0.33"

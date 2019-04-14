@@ -38,6 +38,11 @@ function gitInit({
   run('git config mergetool.keepBackup false', {
     cwd
   });
+
+  // ignore any global .gitignore that will mess with us
+  run('git config --local core.excludesfile false', {
+    cwd
+  });
 }
 
 function commit({

@@ -8,6 +8,7 @@ const tmp = require('tmp');
 const co = require('co');
 const {
   run,
+  gitInit: _gitInit,
   gitStatus,
   isGitClean,
   gitRemoveAll
@@ -19,15 +20,7 @@ const branchRegExp = new RegExp(`^\\* ${branchName}\\r?\\n {2}master$`);
 function gitInit({
   cwd
 }) {
-  run('git init', {
-    cwd
-  });
-
-  run('git config user.email "you@example.com"', {
-    cwd
-  });
-
-  run('git config user.name "Your Name"', {
+  _gitInit({
     cwd
   });
 
@@ -36,11 +29,6 @@ function gitInit({
   });
 
   run('git config mergetool.keepBackup false', {
-    cwd
-  });
-
-  // ignore any global .gitignore that will mess with us
-  run('git config --local core.excludesfile false', {
     cwd
   });
 }

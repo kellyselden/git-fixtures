@@ -5,7 +5,6 @@ const fs = require('fs-extra');
 const cp = require('child_process');
 const fixturify = require('fixturify');
 const tmp = require('tmp');
-const co = require('co');
 const {
   run,
   gitInit: _gitInit,
@@ -72,13 +71,13 @@ function postCommit({
   }
 }
 
-const buildTmp = co.wrap(function* buildTmp({
+async function buildTmp({
   fixturesPath,
   dirty,
   noGit,
   subDir = ''
 }) {
-  let tmpPath = yield new Promise((resolve, reject) => {
+  let tmpPath = await new Promise((resolve, reject) => {
     tmp.dir((err, path) => {
       if (err) {
         reject(err);
@@ -98,16 +97,16 @@ const buildTmp = co.wrap(function* buildTmp({
 
   for (let i = 0; i < tags.length; i++) {
     if (i !== 0) {
-      yield gitRemoveAll({
+      await gitRemoveAll({
         cwd: tmpPath
       });
     }
 
     let tag = tags[i];
 
-    yield fs.ensureDir(tmpSubPath);
+    await fs.ensureDir(tmpSubPath);
 
-    yield fs.copy(path.join(fixturesPath, tag), tmpSubPath);
+    await fs.copy(path.join(fixturesPath, tag), tmpSubPath);
 
     commit({
       m: tag,
@@ -122,11 +121,11 @@ const buildTmp = co.wrap(function* buildTmp({
   });
 
   if (noGit) {
-    yield fs.remove(path.join(tmpSubPath, '.git'));
+    await fs.remove(path.join(tmpSubPath, '.git'));
   }
 
   return tmpSubPath;
-});
+}
 
 function processBin({
   binFile,

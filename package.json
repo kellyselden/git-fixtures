@@ -20,7 +20,6 @@
     "node": ">=8"
   },
   "dependencies": {
-    "co": "^4.6.0",
     "fixturify": "^1.2.0",
     "fs-extra": "^7.0.1",
     "git-diff-apply": "^0.16.0",

@@ -17,7 +17,7 @@ const {
 const branchName = 'foo';
 const branchRegExp = new RegExp(`^\\* ${branchName}\\r?\\n {2}master$`);
 
-function gitInit({
+async function gitInit({
   cwd
 }) {
   _gitInit({
@@ -33,7 +33,7 @@ function gitInit({
   });
 }
 
-function commit({
+async function commit({
   m = 'initial commit',
   tag,
   cwd
@@ -58,7 +58,7 @@ function commit({
   }
 }
 
-function postCommit({
+async function postCommit({
   cwd,
   dirty
 }) {
@@ -68,7 +68,7 @@ function postCommit({
   });
 
   if (dirty) {
-    fs.writeFileSync(path.join(cwd, 'a-random-new-file'), 'bar');
+    await fs.writeFile(path.join(cwd, 'a-random-new-file'), 'bar');
   }
 }
 
@@ -80,7 +80,7 @@ async function buildTmp({
 }) {
   let tmpPath = await tmpDir();
 
-  gitInit({
+  await gitInit({
     cwd: tmpPath
   });
 
@@ -101,14 +101,14 @@ async function buildTmp({
 
     await fs.copy(path.join(fixturesPath, tag), tmpSubPath);
 
-    commit({
+    await commit({
       m: tag,
       tag,
       cwd: tmpPath
     });
   }
 
-  postCommit({
+  await postCommit({
     cwd: tmpPath,
     dirty
   });

@@ -43,7 +43,7 @@ async function commit({
   });
 
   // allow no changes between tags
-  if (!isGitClean({
+  if (!await isGitClean({
     cwd
   })) {
     await run(`git commit -m "${m}"`, {

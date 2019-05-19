@@ -4,7 +4,8 @@ const path = require('path');
 const fs = require('fs-extra');
 const cp = require('child_process');
 const fixturify = require('fixturify');
-const tmp = require('tmp');
+const { promisify } = require('util');
+const tmpDir = promisify(require('tmp').dir);
 const {
   run,
   gitInit: _gitInit,
@@ -77,15 +78,7 @@ async function buildTmp({
   noGit,
   subDir = ''
 }) {
-  let tmpPath = await new Promise((resolve, reject) => {
-    tmp.dir((err, path) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(path);
-      }
-    });
-  });
+  let tmpPath = await tmpDir();
 
   gitInit({
     cwd: tmpPath

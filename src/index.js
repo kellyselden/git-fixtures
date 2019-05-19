@@ -86,7 +86,7 @@ async function buildTmp({
 
   let tmpSubPath = path.join(tmpPath, subDir);
 
-  let tags = fs.readdirSync(fixturesPath);
+  let tags = await fs.readdir(fixturesPath);
 
   for (let i = 0; i < tags.length; i++) {
     if (i !== 0) {
@@ -149,13 +149,13 @@ function processBin({
   };
 }
 
-function processIo({
+async function processIo({
   ps,
   cwd,
   commitMessage,
   expect
 }) {
-  return new Promise(resolve => {
+  return await new Promise(resolve => {
     ps.stdout.on('data', data => {
       let str = data.toString();
       if (str.includes('Normal merge conflict')) {
@@ -174,25 +174,31 @@ function processIo({
 
     ps.stderr.pipe(process.stdout);
 
-    ps.on('exit', () => {
-      processExit({
+    ps.on('exit', async() => {
+      resolve(await processExit({
         promise: Promise.reject(stderr),
         cwd,
         commitMessage,
         expect
-      }).then(resolve);
+      }));
     });
   });
 }
 
-function processExit({
+async function processExit({
   promise,
   cwd,
   commitMessage,
   noGit,
   expect
 }) {
-  return promise.then(result => ({ result })).catch(stderr => {
+  let obj;
+
+  try {
+    let result = await promise;
+
+    obj = { result };
+  } catch (stderr) {
     if (typeof stderr !== 'string') {
       throw stderr;
     }
@@ -201,33 +207,33 @@ function processExit({
     expect(stderr).to.not.contain('fatal:');
     expect(stderr).to.not.contain('Command failed');
 
-    return { stderr };
-  }).then(obj => {
-    if (!noGit) {
-      let result = run('git log -1', {
-        cwd
-      });
+    obj = { stderr };
+  }
 
-      // verify it is not committed
-      expect(result).to.contain('Author: Your Name <you@example.com>');
-      expect(result).to.contain(commitMessage);
+  if (!noGit) {
+    let result = run('git log -1', {
+      cwd
+    });
 
-      result = run('git branch', {
-        cwd
-      });
+    // verify it is not committed
+    expect(result).to.contain('Author: Your Name <you@example.com>');
+    expect(result).to.contain(commitMessage);
 
-      // verify branch was deleted
-      expect(result.trim()).to.match(branchRegExp);
+    result = run('git branch', {
+      cwd
+    });
 
-      let status = gitStatus({
-        cwd
-      });
+    // verify branch was deleted
+    expect(result.trim()).to.match(branchRegExp);
 
-      obj.status = status;
-    }
+    let status = gitStatus({
+      cwd
+    });
 
-    return obj;
-  });
+    obj.status = status;
+  }
+
+  return obj;
 }
 
 function fixtureCompare({

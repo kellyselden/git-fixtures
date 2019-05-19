@@ -20,15 +20,15 @@ const branchRegExp = new RegExp(`^\\* ${branchName}\\r?\\n {2}master$`);
 async function gitInit({
   cwd
 }) {
-  _gitInit({
+  await _gitInit({
     cwd
   });
 
-  run('git config merge.tool "vimdiff"', {
+  await run('git config merge.tool "vimdiff"', {
     cwd
   });
 
-  run('git config mergetool.keepBackup false', {
+  await run('git config mergetool.keepBackup false', {
     cwd
   });
 }
@@ -38,7 +38,7 @@ async function commit({
   tag,
   cwd
 }) {
-  run('git add -A', {
+  await run('git add -A', {
     cwd
   });
 
@@ -46,13 +46,13 @@ async function commit({
   if (!isGitClean({
     cwd
   })) {
-    run(`git commit -m "${m}"`, {
+    await run(`git commit -m "${m}"`, {
       cwd
     });
   }
 
   if (tag) {
-    run(`git tag ${tag}`, {
+    await run(`git tag ${tag}`, {
       cwd
     });
   }
@@ -63,7 +63,7 @@ async function postCommit({
   dirty
 }) {
   // non-master branch test
-  run(`git checkout -b ${branchName}`, {
+  await run(`git checkout -b ${branchName}`, {
     cwd
   });
 
@@ -175,12 +175,14 @@ async function processIo({
     ps.stderr.pipe(process.stdout);
 
     ps.on('exit', async() => {
-      resolve(await processExit({
+      let obj = await processExit({
         promise: Promise.reject(stderr),
         cwd,
         commitMessage,
         expect
-      }));
+      });
+
+      resolve(obj);
     });
   });
 }
@@ -211,7 +213,7 @@ async function processExit({
   }
 
   if (!noGit) {
-    let result = run('git log -1', {
+    let result = await run('git log -1', {
       cwd
     });
 
@@ -219,14 +221,14 @@ async function processExit({
     expect(result).to.contain('Author: Your Name <you@example.com>');
     expect(result).to.contain(commitMessage);
 
-    result = run('git branch', {
+    result = await run('git branch', {
       cwd
     });
 
     // verify branch was deleted
     expect(result.trim()).to.match(branchRegExp);
 
-    let status = gitStatus({
+    let status = await gitStatus({
       cwd
     });
 

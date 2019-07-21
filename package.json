@@ -26,7 +26,7 @@
     "tmp": "0.1.0"
   },
   "devDependencies": {
-    "eslint": "^5.16.0",
+    "eslint": "^6.0.0",
     "eslint-config-sane": "^0.8.0",
     "eslint-plugin-node": "^9.0.0",
     "eslint-plugin-prefer-let": "^1.0.1",

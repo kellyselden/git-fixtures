@@ -4,7 +4,7 @@
   "description": "Helpers for using git with fixtures in temp folders",
   "main": "src",
   "scripts": {
-    "test": "eslint ."
+    "test": "eslint . --ext js,json"
   },
   "repository": {
     "type": "git",
@@ -22,13 +22,15 @@
   "dependencies": {
     "fixturify": "^1.2.0",
     "fs-extra": "^8.0.0",
-    "git-diff-apply": "^0.18.0",
+    "git-diff-apply": "0.18.0",
     "tmp": "0.1.0"
   },
   "devDependencies": {
-    "eslint": "^6.0.0",
-    "eslint-config-sane": "^0.8.0",
-    "eslint-plugin-node": "^9.0.0",
+    "eslint": "^6.1.0",
+    "eslint-config-sane": "0.8.5",
+    "eslint-config-sane-node": "0.2.2",
+    "eslint-plugin-json-files": "0.6.2",
+    "eslint-plugin-node": "^9.1.0",
     "eslint-plugin-prefer-let": "^1.0.1",
     "renovate-config-standard": "^2.0.0"
   },

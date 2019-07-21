@@ -4,12 +4,10 @@ module.exports = {
     ecmaVersion: 2018
   },
   extends: [
-    'sane',
-    'plugin:node/recommended'
+    'sane-node'
   ],
   env: {
     es6: true,
-    node: true
   },
   rules: {
   }

@@ -1,6 +1,6 @@
 {
   "name": "git-fixtures",
-  "version": "0.18.2",
+  "version": "1.0.0",
   "description": "Helpers for using git with fixtures in temp folders",
   "main": "src",
   "scripts": {

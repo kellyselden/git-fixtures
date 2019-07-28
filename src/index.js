@@ -226,7 +226,7 @@ async function processExit({
     });
 
     // verify branch was deleted
-    expect(result).to.match(branchRegExp);
+    expect(result.trim()).to.match(branchRegExp);
 
     let status = await gitStatus({
       cwd

@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/kellyselden/git-fixtures#readme",
   "engines": {
-    "node": ">=8"
+    "node": ">=8.3"
   },
   "dependencies": {
     "fixturify": "^1.2.0",

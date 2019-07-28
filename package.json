@@ -22,7 +22,7 @@
   "dependencies": {
     "fixturify": "^1.2.0",
     "fs-extra": "^8.0.0",
-    "git-diff-apply": "0.18.1",
+    "git-diff-apply": "0.19.0",
     "tmp": "0.1.0"
   },
   "devDependencies": {

@@ -2,7 +2,7 @@
 
 const path = require('path');
 const fs = require('fs-extra');
-const cp = require('child_process');
+const execa = require('execa');
 const fixturify = require('fixturify');
 const { promisify } = require('util');
 const tmpDir = promisify(require('tmp').dir);
@@ -122,19 +122,24 @@ async function buildTmp({
 
 function processBin({
   binFile,
+  bin,
   args = [],
   cwd,
   commitMessage,
   expect
 }) {
-  binFile = path.join(process.cwd(), 'bin', binFile);
-
-  args = [binFile].concat(args);
-
-  let ps = cp.spawn('node', args, {
-    cwd,
-    env: process.env
-  });
+  let ps;
+  if (binFile) {
+    ps = execa.node(path.join(process.cwd(), 'bin', binFile), args, {
+      cwd
+    });
+  } else {
+    ps = execa(bin, args, {
+      cwd,
+      preferLocal: true,
+      localDir: process.cwd()
+    });
+  }
 
   let promise = processIo({
     ps,

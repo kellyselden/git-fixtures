@@ -130,7 +130,10 @@ function processBin({
 }) {
   let ps;
   if (binFile) {
-    ps = execa.node(path.join(process.cwd(), 'bin', binFile), args, {
+    // `execa.node` will pass along debugger port options when debugging,
+    // and you'll get an error like
+    // "Starting inspector on 127.0.0.1:34110 failed: address already in use"
+    ps = execa('node', [path.join(process.cwd(), 'bin', binFile), ...args], {
       cwd
     });
   } else {

@@ -41,8 +41,8 @@ async function commit({
     cwd
   });
 
-  // allow empty first tag
-  // and no changes between tags
+  // allow empty first commit
+  // or no changes between tags
   await run(`git commit --allow-empty -m "${m}"`, {
     cwd
   });

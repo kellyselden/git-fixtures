@@ -95,7 +95,15 @@ async function buildTmp({
 
     await fs.ensureDir(tmpSubPath);
 
-    await fs.copy(path.join(fixturesPath, tag), tmpSubPath);
+    let tagPath = path.join(fixturesPath, tag);
+
+    let files = await fs.readdir(tagPath);
+
+    // if only a single .gitkeep, treat as an empty dir
+    // and skip the copy
+    if (!(files.length === 1 && files[0] === '.gitkeep')) {
+      await fs.copy(tagPath, tmpSubPath);
+    }
 
     await commit({
       m: tag,

@@ -10,7 +10,6 @@ const {
   run,
   gitInit: _gitInit,
   gitStatus,
-  isGitClean,
   gitRemoveAll
 } = require('git-diff-apply');
 
@@ -42,14 +41,11 @@ async function commit({
     cwd
   });
 
-  // allow no changes between tags
-  if (!await isGitClean({
+  // allow empty first tag
+  // and no changes between tags
+  await run(`git commit --allow-empty -m "${m}"`, {
     cwd
-  })) {
-    await run(`git commit -m "${m}"`, {
-      cwd
-    });
-  }
+  });
 
   if (tag) {
     await run(`git tag ${tag}`, {

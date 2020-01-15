@@ -11,9 +11,8 @@ cache:
   - "$HOME/.npm"
 deploy:
   provider: npm
-  email: kellyselden@gmail.com
-  api_key:
-    secure: yc1EUj0x6bTWBxulpEn6/ymtIlE8aAR+quddxgwKg8nhFylrQ+QIt7p3+irb2HhIRr8Y6MWkxU2pAeTGY1bz5j8s/pCuhSmXo2l7oy/7u49CBPxhyb7U97FWH1ajpvjnFL+KsPXaUYqkfd/KWh3PayofKCzh3pFF8x1Mth5gZU36gxSkScZrdNf2aT2jxWty7y1QAzZQR8HSFYHYVu4mZuCPsmgWapXSB1jotTNOuAIdJeRheOF4OnFZemamifcRPaQ0YYuHtmaIB7yUDP68mSlYfJX/xYC5gSNSWks4OkssZ1mJJ2v7yuX0NcTTvirSOgZ35Q3uqcRaYHlgv56xStJmSvio0BX8MiUTenCDt4AH16UyvCdKg8VYr2EPvI3DBamLmvZFLwrZNApjGZ2gxB/pCROECIeHRvQb1OXNze4Q9ISImt71Ol9324ih0okpvLOUobJ+SOhdCjkEhoR0LM5MmdRosyvBeb1BWyr/aM6qRGACVJwXs3PLMSDJ8NvCkHn1XV5CnUbIMD9TdM/84we+zn7yACiZGq9Nn4CTluGSnJ1i/zoh54jrai+TaYrADvJS0RhrAOUZ664IvCcVAb26Kgcjl0Ut36wsQEc9R9KhRn46HcqAk6QKNozcdNCAYy3YQdrqv6E33b8eymYN+HiOfUmPidwe/jLcRT7x70M=
+  email: $NPM_EMAIL
+  api_key: $NPM_TOKEN
   on:
     tags: true
     repo: kellyselden/git-fixtures

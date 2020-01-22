@@ -167,7 +167,7 @@ async function processIo({
   commitMessage,
   expect
 }) {
-  return await new Promise(resolve => {
+  return await new Promise((resolve, reject) => {
     ps.stdout.on('data', data => {
       let str = data.toString();
       if (str.includes('Normal merge conflict')) {
@@ -187,14 +187,18 @@ async function processIo({
     ps.stderr.pipe(process.stdout);
 
     ps.on('exit', async() => {
-      let obj = await processExit({
-        promise: Promise.reject(stderr),
-        cwd,
-        commitMessage,
-        expect
-      });
+      try {
+        let obj = await processExit({
+          promise: Promise.reject(stderr),
+          cwd,
+          commitMessage,
+          expect
+        });
 
-      resolve(obj);
+        resolve(obj);
+      } catch (err) {
+        reject(err);
+      }
     });
   });
 }

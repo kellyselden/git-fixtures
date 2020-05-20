@@ -27,7 +27,7 @@
     "execa": "^3.3.0",
     "fixturify": "^1.2.0",
     "fs-extra": "^8.0.0",
-    "git-diff-apply": "0.22.8",
+    "git-diff-apply": "0.22.10",
     "tmp": "0.2.1"
   },
   "devDependencies": {

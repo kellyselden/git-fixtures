@@ -39,6 +39,6 @@
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-prefer-let": "^1.0.1",
     "renovate-config-standard": "^2.0.0",
-    "standard-node-template": "0.0.1"
+    "standard-node-template": "1.0.0"
   }
 }

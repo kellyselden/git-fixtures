@@ -31,7 +31,7 @@
     "tmp": "0.2.1"
   },
   "devDependencies": {
-    "@kellyselden/node-template": "1.1.0",
+    "@kellyselden/node-template": "1.2.1",
     "eslint": "^7.8.1",
     "eslint-config-sane": "0.8.5",
     "eslint-config-sane-node": "0.3.0",

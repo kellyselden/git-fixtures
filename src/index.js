@@ -29,10 +29,14 @@ async function gitInit({
   await run('git config mergetool.keepBackup false', {
     cwd
   });
+
+  await commit({
+    cwd
+  });
 }
 
 async function commit({
-  m = 'initial commit',
+  m = 'initial empty commit to create master branch',
   tag,
   cwd
 }) {

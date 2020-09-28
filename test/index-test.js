@@ -21,7 +21,7 @@ describe(function() {
 
       let { stdout } = await execa('git', ['status'], { cwd: this.tmpPath });
 
-      expect(stdout).to.include('No commits yet');
+      expect(stdout).to.include('nothing to commit');
     });
   });
 });

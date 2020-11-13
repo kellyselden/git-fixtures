@@ -277,6 +277,23 @@ function fixtureCompare({
   expect(actual).to.deep.equal(expected);
 }
 
+async function cloneRemote({
+  localPath,
+  remotePath
+}) {
+  if (!remotePath) {
+    remotePath = await createTmpDir();
+  }
+
+  await execa('git', ['clone', '--bare', localPath, remotePath]);
+
+  await execa('git', ['remote', 'add', 'origin', remotePath], {
+    cwd: localPath
+  });
+
+  return remotePath;
+}
+
 module.exports = {
   gitInit,
   commit,
@@ -285,5 +302,6 @@ module.exports = {
   processBin,
   processIo,
   processExit,
-  fixtureCompare
+  fixtureCompare,
+  cloneRemote
 };

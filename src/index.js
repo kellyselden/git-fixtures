@@ -4,8 +4,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const execa = require('execa');
 const fixturify = require('fixturify');
-const { promisify } = require('util');
-const tmpDir = promisify(require('tmp').dir);
+const { createTmpDir } = require('./tmp');
 const {
   run,
   gitInit: _gitInit,
@@ -74,7 +73,7 @@ async function buildTmp({
   noGit,
   subDir = ''
 }) {
-  let tmpPath = await tmpDir();
+  let tmpPath = await createTmpDir();
 
   await gitInit({
     cwd: tmpPath

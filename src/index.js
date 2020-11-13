@@ -17,7 +17,11 @@ const branchRegExp = new RegExp(`^\\* ${branchName}\\r?\\n {2}master$`);
 
 async function gitInit({
   cwd
-}) {
+} = {}) {
+  if (!cwd) {
+    cwd = await createTmpDir();
+  }
+
   await _gitInit({
     cwd
   });
@@ -33,6 +37,8 @@ async function gitInit({
   await commit({
     cwd
   });
+
+  return cwd;
 }
 
 async function commit({

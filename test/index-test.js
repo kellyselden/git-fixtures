@@ -9,19 +9,27 @@ const { createTmpDir } = require('../src/tmp');
 const execa = require('execa');
 
 describe(function() {
-  beforeEach(async function() {
-    this.tmpPath = await createTmpDir();
-  });
-
   describe(gitInit, function() {
-    it('works', async function() {
+    it('works with cwd', async function() {
+      let cwd = await createTmpDir();
+
       await gitInit({
-        cwd: this.tmpPath
+        cwd
       });
 
-      let { stdout } = await execa('git', ['status'], { cwd: this.tmpPath });
+      let { stdout } = await execa('git', ['status'], { cwd });
 
       expect(stdout).to.include('nothing to commit');
+    });
+
+    it('works without cwd', async function() {
+      let cwd = await gitInit();
+
+      let { stdout } = await execa('git', ['status'], { cwd });
+
+      expect(stdout).to.include('nothing to commit');
+
+      expect(cwd).to.startWith(require('os').tmpdir());
     });
   });
 });

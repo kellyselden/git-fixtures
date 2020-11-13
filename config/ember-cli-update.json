@@ -18,7 +18,7 @@
         {
           "name": "@kellyselden/node-template",
           "options": [
-            "--repo-slug=kellyselden/git-fixtures",
+            "----repo-slug=kellyselden/git-fixtures",
             "--github-actions",
             "--renovate"
           ]

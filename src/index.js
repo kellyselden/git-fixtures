@@ -6,7 +6,6 @@ const execa = require('execa');
 const fixturify = require('fixturify');
 const { createTmpDir } = require('./tmp');
 const {
-  run,
   gitInit: _gitInit,
   gitStatus,
   gitRemoveAll
@@ -26,11 +25,11 @@ async function gitInit({
     cwd
   });
 
-  await run('git config merge.tool "vimdiff"', {
+  await execa('git', ['config', 'merge.tool', 'vimdiff'], {
     cwd
   });
 
-  await run('git config mergetool.keepBackup false', {
+  await execa('git', ['config', 'mergetool.keepBackup', 'false'], {
     cwd
   });
 
@@ -46,18 +45,18 @@ async function commit({
   tag,
   cwd
 }) {
-  await run('git add -A', {
+  await execa('git', ['add', '-A'], {
     cwd
   });
 
   // allow empty first commit
   // or no changes between tags
-  await run(`git commit --allow-empty -m "${m}"`, {
+  await execa('git', ['commit', '--allow-empty', '-m', m], {
     cwd
   });
 
   if (tag) {
-    await run(`git tag ${tag}`, {
+    await execa('git', ['tag', tag], {
       cwd
     });
   }
@@ -68,7 +67,7 @@ async function postCommit({
   dirty
 }) {
   // non-master branch test
-  await run(`git checkout -b ${branchName}`, {
+  await execa('git', ['checkout', '-b', branchName], {
     cwd
   });
 
@@ -238,17 +237,17 @@ async function processExit({
   }
 
   if (!noGit) {
-    let result = await run('git log -1', {
+    let result = (await execa('git', ['log', '-1'], {
       cwd
-    });
+    })).stdout;
 
     // verify it is not committed
     expect(result).to.contain('Author: Your Name <you@example.com>');
     expect(result).to.contain(commitMessage);
 
-    result = await run('git branch', {
+    result = (await execa('git', ['branch'], {
       cwd
-    });
+    })).stdout;
 
     // verify branch was deleted
     expect(result.trim()).to.match(branchRegExp);

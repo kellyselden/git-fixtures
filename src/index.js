@@ -278,6 +278,7 @@ function fixtureCompare({
 
 async function cloneRemote({
   localPath,
+  remoteName = 'origin',
   remotePath
 }) {
   if (!remotePath) {
@@ -286,7 +287,7 @@ async function cloneRemote({
 
   await execa('git', ['clone', '--bare', localPath, remotePath]);
 
-  await execa('git', ['remote', 'add', 'origin', remotePath], {
+  await execa('git', ['remote', 'add', remoteName, remotePath], {
     cwd: localPath
   });
 

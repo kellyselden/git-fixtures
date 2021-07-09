@@ -14,6 +14,12 @@ const {
 const branchName = 'foo';
 const branchRegExp = new RegExp(`^\\* ${branchName}\\r?\\n {2}master$`);
 
+async function git(args, options) {
+  let { stdout } = await execa('git', args, options);
+
+  return stdout;
+}
+
 async function gitInit({
   cwd
 } = {}) {
@@ -25,11 +31,11 @@ async function gitInit({
     cwd
   });
 
-  await execa('git', ['config', 'merge.tool', 'vimdiff'], {
+  await git(['config', 'merge.tool', 'vimdiff'], {
     cwd
   });
 
-  await execa('git', ['config', 'mergetool.keepBackup', 'false'], {
+  await git(['config', 'mergetool.keepBackup', 'false'], {
     cwd
   });
 
@@ -45,18 +51,18 @@ async function commit({
   tag,
   cwd
 }) {
-  await execa('git', ['add', '-A'], {
+  await git(['add', '-A'], {
     cwd
   });
 
   // allow empty first commit
   // or no changes between tags
-  await execa('git', ['commit', '--allow-empty', '-m', m], {
+  await git(['commit', '--allow-empty', '-m', m], {
     cwd
   });
 
   if (tag) {
-    await execa('git', ['tag', tag], {
+    await git(['tag', tag], {
       cwd
     });
   }
@@ -67,7 +73,7 @@ async function postCommit({
   dirty
 }) {
   // non-master branch test
-  await execa('git', ['checkout', '-b', branchName], {
+  await git(['checkout', '-b', branchName], {
     cwd
   });
 
@@ -237,17 +243,17 @@ async function processExit({
   }
 
   if (!noGit) {
-    let result = (await execa('git', ['log', '-1'], {
+    let result = await git(['log', '-1'], {
       cwd
-    })).stdout;
+    });
 
     // verify it is not committed
     expect(result).to.contain('Author: Your Name <you@example.com>');
     expect(result).to.contain(commitMessage);
 
-    result = (await execa('git', ['branch'], {
+    result = await git(['branch'], {
       cwd
-    })).stdout;
+    });
 
     // verify branch was deleted
     expect(result.trim()).to.match(branchRegExp);
@@ -285,9 +291,9 @@ async function cloneRemote({
     remotePath = await createTmpDir();
   }
 
-  await execa('git', ['clone', '--bare', localPath, remotePath]);
+  await git(['clone', '--bare', localPath, remotePath]);
 
-  await execa('git', ['remote', 'add', remoteName, remotePath], {
+  await git(['remote', 'add', remoteName, remotePath], {
     cwd: localPath
   });
 

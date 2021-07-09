@@ -21,10 +21,16 @@ async function git(args, options) {
   return stdout;
 }
 
-async function getCurrentBranchName(cwd) {
-  let branchName = await git(['rev-parse', '--abbrev-ref', 'HEAD'], { cwd });
+function toLines(string) {
+  return string.split(/\r?\n/).filter(Boolean);
+}
 
-  return branchName;
+async function getLocalBranchNames(cwd) {
+  let stdout = await git(['for-each-ref', '--format', '%(refname:short)', 'refs/heads'], {
+    cwd
+  });
+
+  return toLines(stdout);
 }
 
 async function gitInit({
@@ -301,7 +307,7 @@ async function cloneRemote({
   localPath,
   remoteName = 'origin',
   remotePath,
-  shouldSetUpstreamBranch = true
+  shouldSetUpstreamBranches = true
 }) {
   if (!remotePath) {
     remotePath = await createTmpDir();
@@ -317,12 +323,14 @@ async function cloneRemote({
     cwd: localPath
   });
 
-  if (shouldSetUpstreamBranch) {
-    let branchName = await getCurrentBranchName(localPath);
+  if (shouldSetUpstreamBranches) {
+    let branchNames = await getLocalBranchNames(localPath);
 
-    await git(['branch', '--set-upstream-to', `refs/remotes/${remoteName}/${branchName}`, branchName], {
-      cwd: localPath
-    });
+    for (let branchName of branchNames) {
+      await git(['branch', '--set-upstream-to', `refs/remotes/${remoteName}/${branchName}`, branchName], {
+        cwd: localPath
+      });
+    }
   }
 
   return remotePath;

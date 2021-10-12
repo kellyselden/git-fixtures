@@ -31,7 +31,7 @@
     "tmp": "0.2.1"
   },
   "devDependencies": {
-    "@kellyselden/node-template": "2.1.0",
+    "@kellyselden/node-template": "2.1.1",
     "chai": "^4.3.4",
     "chai-string": "^1.5.0",
     "eslint": "^7.28.0",

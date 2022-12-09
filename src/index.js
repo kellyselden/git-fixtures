@@ -11,8 +11,9 @@ const {
   gitRemoveAll
 } = require('git-diff-apply');
 
+const defaultBranchName = 'master';
 const branchName = 'foo';
-const branchRegExp = new RegExp(`^\\* ${branchName}\\r?\\n {2}master$`);
+const branchRegExp = new RegExp(`^\\* ${branchName}\\r?\\n {2}${defaultBranchName}$`);
 
 async function git(args, options) {
   let { stdout } = await execa('git', args, options);
@@ -47,7 +48,7 @@ async function gitInit({
 }
 
 async function commit({
-  m = 'initial empty commit to create master branch',
+  m = `initial empty commit to create ${defaultBranchName} branch`,
   tag,
   cwd
 }) {
@@ -72,7 +73,7 @@ async function postCommit({
   cwd,
   dirty
 }) {
-  // non-master branch test
+  // non-default branch test
   await git(['checkout', '-b', branchName], {
     cwd
   });

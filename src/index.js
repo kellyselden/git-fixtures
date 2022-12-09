@@ -22,7 +22,8 @@ async function git(args, options) {
 }
 
 async function gitInit({
-  cwd
+  cwd,
+  defaultBranchName
 } = {}) {
   if (!cwd) {
     cwd = await createTmpDir();
@@ -39,6 +40,13 @@ async function gitInit({
   await git(['config', 'mergetool.keepBackup', 'false'], {
     cwd
   });
+
+  if (defaultBranchName) {
+    // Don't rely on system default branch which varies.
+    await git(['config', 'init.defaultBranch', defaultBranchName], {
+      cwd
+    });
+  }
 
   await commit({
     cwd

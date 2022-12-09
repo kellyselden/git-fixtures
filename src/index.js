@@ -43,7 +43,7 @@ async function gitInit({
 
   if (defaultBranchName) {
     // Don't rely on system default branch which varies.
-    await git(['config', 'init.defaultBranch', defaultBranchName], {
+    await git(['checkout', '-b', defaultBranchName], {
       cwd
     });
   }

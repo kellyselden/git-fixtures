@@ -11,7 +11,7 @@ const {
   gitRemoveAll
 } = require('git-diff-apply');
 
-const defaultBranchName = 'master';
+const DEFAULT_BRANCH_NAME = 'master';
 const branchName = 'foo';
 const branchRegExp = new RegExp(`^\\* ${branchName}\\r?\\n {2}${defaultBranchName}$`);
 
@@ -23,7 +23,7 @@ async function git(args, options) {
 
 async function gitInit({
   cwd,
-  defaultBranchName
+  defaultBranchName = DEFAULT_BRANCH_NAME
 } = {}) {
   if (!cwd) {
     cwd = await createTmpDir();

@@ -13,7 +13,7 @@ const {
 
 const DEFAULT_BRANCH_NAME = 'master';
 const branchName = 'foo';
-const branchRegExp = new RegExp(`^\\* ${branchName}\\r?\\n {2}${defaultBranchName}$`);
+const branchRegExp = new RegExp(`^\\* ${branchName}\\r?\\n {2}${DEFAULT_BRANCH_NAME}$`);
 
 async function git(args, options) {
   let { stdout } = await execa('git', args, options);
@@ -56,7 +56,7 @@ async function gitInit({
 }
 
 async function commit({
-  m = `initial empty commit to create ${defaultBranchName} branch`,
+  m = `initial empty commit to create ${DEFAULT_BRANCH_NAME} branch`,
   tag,
   cwd
 }) {

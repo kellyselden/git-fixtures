@@ -21,6 +21,12 @@ async function git(args, options) {
   return stdout;
 }
 
+async function getCurrentBranchName(cwd) {
+  let branchName = await git(['rev-parse', '--abbrev-ref', 'HEAD'], { cwd });
+
+  return branchName;
+}
+
 async function gitInit({
   cwd,
   defaultBranchName = DEFAULT_BRANCH_NAME
@@ -294,7 +300,8 @@ function fixtureCompare({
 async function cloneRemote({
   localPath,
   remoteName = 'origin',
-  remotePath
+  remotePath,
+  shouldSetUpstreamBranch = true
 }) {
   if (!remotePath) {
     remotePath = await createTmpDir();
@@ -305,6 +312,18 @@ async function cloneRemote({
   await git(['remote', 'add', remoteName, remotePath], {
     cwd: localPath
   });
+
+  await git(['fetch'], {
+    cwd: localPath
+  });
+
+  if (shouldSetUpstreamBranch) {
+    let branchName = await getCurrentBranchName(localPath);
+
+    await git(['branch', '--set-upstream-to', `refs/remotes/${remoteName}/${branchName}`, branchName], {
+      cwd: localPath
+    });
+  }
 
   return remotePath;
 }

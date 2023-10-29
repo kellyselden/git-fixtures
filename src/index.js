@@ -300,6 +300,24 @@ function fixtureCompare({
   delete actual['.git'];
   delete actual['node_modules'];
 
+  function replaceConflictRevisions(tree) {
+    for (let [path, textOrDir] of Object.entries(tree)) {
+      if (typeof textOrDir === 'string') {
+        let replaceValue = '>>>>>>> fffffff ($<from>...$<to>)';
+
+        // normalize a format found on AppVeyor
+        textOrDir = textOrDir.replace(/^>>>>>>> [0-9a-f]{7}\.{3} (?<from>\S+)\.{3}(?<to>\S+)$/m, replaceValue);
+
+        tree[path] = textOrDir.replace(/^>>>>>>> [0-9a-f]{7} \((?<from>\S+)\.{3}(?<to>\S+)\)$/m, replaceValue);
+      } else {
+        replaceConflictRevisions(textOrDir);
+      }
+    }
+  }
+
+  replaceConflictRevisions(actual);
+  replaceConflictRevisions(expected);
+
   expect(actual).to.deep.equal(expected);
 }
 

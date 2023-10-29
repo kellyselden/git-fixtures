@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/kellyselden/git-fixtures#readme",
   "engines": {
-    "node": ">=16.13"
+    "node": ">=18.12"
   },
   "dependencies": {
     "execa": "^5.0.0",

@@ -303,12 +303,12 @@ function fixtureCompare({
   function replaceConflictRevisions(tree) {
     for (let [path, textOrDir] of Object.entries(tree)) {
       if (typeof textOrDir === 'string') {
-        let replaceValue = '>>>>>>> fffffff ($<from>...$<to>)';
+        let replaceValue = '>>>>>>> fffffff ($1)';
 
         // normalize a format found on AppVeyor
-        textOrDir = textOrDir.replace(/^>>>>>>> [0-9a-f]{7}\.{3} (?<from>\S+)\.{3}(?<to>\S+)$/m, replaceValue);
+        textOrDir = textOrDir.replace(/^>>>>>>> [0-9a-f]{7}\.{3} (\S+)$/m, replaceValue);
 
-        tree[path] = textOrDir.replace(/^>>>>>>> [0-9a-f]{7} \((?<from>\S+)\.{3}(?<to>\S+)\)$/m, replaceValue);
+        tree[path] = textOrDir.replace(/^>>>>>>> [0-9a-f]{7} \((\S+)\)$/m, replaceValue);
       } else {
         replaceConflictRevisions(textOrDir);
       }

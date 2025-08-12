@@ -28,7 +28,7 @@
     "fixturify": "^3.0.0",
     "fs-extra": "^11.0.0",
     "git-diff-apply": "^7.0.0",
-    "tmp": "0.2.4"
+    "tmp": "0.2.5"
   },
   "devDependencies": {
     "@kellyselden/node-template": "6.5.2",

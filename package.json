@@ -24,7 +24,7 @@
     "node": ">=20.9"
   },
   "dependencies": {
-    "execa": "^5.0.0",
+    "execa": "^7.0.0",
     "fixturify": "^3.0.0",
     "fs-extra": "^11.0.0",
     "git-diff-apply": "^7.0.0",

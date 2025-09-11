@@ -2,26 +2,23 @@
   "name": "git-fixtures",
   "version": "9.1.1",
   "description": "Helpers for using git with fixtures in temp folders",
-  "main": "src",
-  "files": [
-    "src"
-  ],
-  "scripts": {
-    "lint": "eslint . --ext js,json",
-    "test": "mocha"
+  "homepage": "https://github.com/kellyselden/git-fixtures#readme",
+  "bugs": {
+    "url": "https://github.com/kellyselden/git-fixtures/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kellyselden/git-fixtures.git"
   },
-  "author": "Kelly Selden",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/kellyselden/git-fixtures/issues"
-  },
-  "homepage": "https://github.com/kellyselden/git-fixtures#readme",
-  "engines": {
-    "node": ">=20.9"
+  "author": "Kelly Selden",
+  "main": "src",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint",
+    "test": "mocha"
   },
   "dependencies": {
     "execa": "^5.0.0",
@@ -31,19 +28,17 @@
     "tmp": "0.2.5"
   },
   "devDependencies": {
+    "@kellyselden/eslint-config": "^1.0.0",
     "@kellyselden/node-template": "6.11.1",
     "chai": "^4.5.0",
     "chai-string": "^1.5.0",
-    "eslint": "^8.57.1",
-    "eslint-config-sane": "^1.0.2",
-    "eslint-config-sane-node": "^2.0.0",
-    "eslint-plugin-json-files": "^5.1.0",
-    "eslint-plugin-mocha": "^10.5.0",
-    "eslint-plugin-n": "^17.20.0",
-    "eslint-plugin-prefer-let": "^4.0.0",
-    "mocha": "^11.7.0",
-    "mocha-helpers": "^10.0.0",
-    "renovate-config-standard": "2.3.0",
+    "eslint": "^9.34.0",
+    "mocha": "^11.7.1",
+    "mocha-helpers": "^10.2.1",
+    "renovate-config-standard": "2.4.2",
     "standard-node-template": "7.2.0"
+  },
+  "engines": {
+    "node": ">=20.9"
   }
 }

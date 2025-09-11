@@ -8,7 +8,7 @@ const { createTmpDir } = require('./tmp');
 const {
   gitInit: _gitInit,
   gitStatus,
-  gitRemoveAll
+  gitRemoveAll,
 } = require('git-diff-apply');
 
 const DEFAULT_BRANCH_NAME = 'master';
@@ -27,7 +27,7 @@ function toLines(string) {
 
 async function getLocalBranchNames(cwd) {
   let stdout = await git(['for-each-ref', '--format', '%(refname:short)', 'refs/heads'], {
-    cwd
+    cwd,
   });
 
   return toLines(stdout);
@@ -35,33 +35,33 @@ async function getLocalBranchNames(cwd) {
 
 async function gitInit({
   cwd,
-  defaultBranchName = DEFAULT_BRANCH_NAME
+  defaultBranchName = DEFAULT_BRANCH_NAME,
 } = {}) {
   if (!cwd) {
     cwd = await createTmpDir();
   }
 
   await _gitInit({
-    cwd
+    cwd,
   });
 
   await git(['config', 'merge.tool', 'vimdiff'], {
-    cwd
+    cwd,
   });
 
   await git(['config', 'mergetool.keepBackup', 'false'], {
-    cwd
+    cwd,
   });
 
   if (defaultBranchName) {
     // Don't rely on system default branch which varies.
     await git(['checkout', '-b', defaultBranchName], {
-      cwd
+      cwd,
     });
   }
 
   await commit({
-    cwd
+    cwd,
   });
 
   return cwd;
@@ -70,32 +70,32 @@ async function gitInit({
 async function commit({
   m = `initial empty commit to create ${DEFAULT_BRANCH_NAME} branch`,
   tag,
-  cwd
+  cwd,
 }) {
   await git(['add', '-A'], {
-    cwd
+    cwd,
   });
 
   // allow empty first commit
   // or no changes between tags
   await git(['commit', '--allow-empty', '-m', m], {
-    cwd
+    cwd,
   });
 
   if (tag) {
     await git(['tag', tag], {
-      cwd
+      cwd,
     });
   }
 }
 
 async function postCommit({
   cwd,
-  dirty
+  dirty,
 }) {
   // non-default branch test
   await git(['checkout', '-b', branchName], {
-    cwd
+    cwd,
   });
 
   if (dirty) {
@@ -107,12 +107,12 @@ async function buildTmp({
   fixturesPath,
   dirty,
   noGit,
-  subDir = ''
+  subDir = '',
 }) {
   let tmpPath = await createTmpDir();
 
   await gitInit({
-    cwd: tmpPath
+    cwd: tmpPath,
   });
 
   let tmpSubPath = path.join(tmpPath, subDir);
@@ -122,7 +122,7 @@ async function buildTmp({
   for (let i = 0; i < tags.length; i++) {
     if (i !== 0) {
       await gitRemoveAll({
-        cwd: tmpPath
+        cwd: tmpPath,
       });
     }
 
@@ -143,13 +143,13 @@ async function buildTmp({
     await commit({
       m: tag,
       tag,
-      cwd: tmpPath
+      cwd: tmpPath,
     });
   }
 
   await postCommit({
     cwd: tmpPath,
-    dirty
+    dirty,
   });
 
   if (noGit) {
@@ -165,7 +165,7 @@ function processBin({
   args = [],
   cwd,
   commitMessage,
-  expect
+  expect,
 }) {
   let ps;
   if (binFile) {
@@ -173,13 +173,13 @@ function processBin({
     // and you'll get an error like
     // "Starting inspector on 127.0.0.1:34110 failed: address already in use"
     ps = execa('node', [path.join(process.cwd(), 'bin', binFile), ...args], {
-      cwd
+      cwd,
     });
   } else {
     ps = execa(bin, args, {
       cwd,
       preferLocal: true,
-      localDir: process.cwd()
+      localDir: process.cwd(),
     });
   }
 
@@ -187,12 +187,12 @@ function processBin({
     ps,
     cwd,
     commitMessage,
-    expect
+    expect,
   });
 
   return {
     ps,
-    promise
+    promise,
   };
 }
 
@@ -200,7 +200,7 @@ async function processIo({
   ps,
   cwd,
   commitMessage,
-  expect
+  expect,
 }) {
   return await new Promise((resolve, reject) => {
     ps.stdout.on('data', data => {
@@ -227,7 +227,7 @@ async function processIo({
           promise: Promise.reject(stderr),
           cwd,
           commitMessage,
-          expect
+          expect,
         });
 
         resolve(obj);
@@ -243,7 +243,7 @@ async function processExit({
   cwd,
   commitMessage,
   noGit,
-  expect
+  expect,
 }) {
   let obj;
 
@@ -265,7 +265,7 @@ async function processExit({
 
   if (!noGit) {
     let result = await git(['log', '-1'], {
-      cwd
+      cwd,
     });
 
     // verify it is not committed
@@ -273,14 +273,14 @@ async function processExit({
     expect(result).to.contain(commitMessage);
 
     result = await git(['branch'], {
-      cwd
+      cwd,
     });
 
     // verify branch was deleted
     expect(result.trim()).to.match(branchRegExp);
 
     let status = await gitStatus({
-      cwd
+      cwd,
     });
 
     obj.status = status;
@@ -292,7 +292,7 @@ async function processExit({
 function fixtureCompare({
   expect,
   actual,
-  expected
+  expected,
 }) {
   actual = fixturify.readSync(actual, { ignoreEmptyDirs: true });
   expected = fixturify.readSync(expected);
@@ -325,7 +325,7 @@ async function cloneRemote({
   localPath,
   remoteName = 'origin',
   remotePath,
-  shouldSetUpstreamBranches = true
+  shouldSetUpstreamBranches = true,
 }) {
   if (!remotePath) {
     remotePath = await createTmpDir();
@@ -334,11 +334,11 @@ async function cloneRemote({
   await git(['clone', '--bare', localPath, remotePath]);
 
   await git(['remote', 'add', remoteName, remotePath], {
-    cwd: localPath
+    cwd: localPath,
   });
 
   await git(['fetch'], {
-    cwd: localPath
+    cwd: localPath,
   });
 
   if (shouldSetUpstreamBranches) {
@@ -346,7 +346,7 @@ async function cloneRemote({
 
     for (let branchName of branchNames) {
       await git(['branch', '--set-upstream-to', `refs/remotes/${remoteName}/${branchName}`, branchName], {
-        cwd: localPath
+        cwd: localPath,
       });
     }
   }
@@ -363,5 +363,5 @@ module.exports = {
   processIo,
   processExit,
   fixtureCompare,
-  cloneRemote
+  cloneRemote,
 };

@@ -4,7 +4,7 @@ const { describe } = require('./helpers/mocha');
 const { expect } = require('./helpers/chai');
 const {
   gitInit,
-  cloneRemote
+  cloneRemote,
 } = require('../src');
 const { createTmpDir } = require('../src/tmp');
 const execa = require('execa');
@@ -15,7 +15,7 @@ describe(function() {
       let cwd = await createTmpDir();
 
       await gitInit({
-        cwd
+        cwd,
       });
 
       let { stdout } = await execa('git', ['status'], { cwd });
@@ -44,7 +44,7 @@ describe(function() {
 
       await cloneRemote({
         localPath: this.localPath,
-        remotePath
+        remotePath,
       });
 
       let localCommit = (await execa('git', ['rev-list', '-n', '1', 'HEAD'], { cwd: this.localPath })).stdout;
@@ -55,7 +55,7 @@ describe(function() {
 
     it('works without remotePath', async function() {
       let remotePath = await cloneRemote({
-        localPath: this.localPath
+        localPath: this.localPath,
       });
 
       let localCommit = (await execa('git', ['rev-list', '-n', '1', 'HEAD'], { cwd: this.localPath })).stdout;

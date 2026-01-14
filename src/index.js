@@ -203,16 +203,6 @@ async function processIo({
   expect,
 }) {
   return await new Promise((resolve, reject) => {
-    ps.stdout.on('data', data => {
-      let str = data.toString();
-      if (str.includes('Normal merge conflict')) {
-        ps.stdin.write(':%diffg 3\n');
-        ps.stdin.write(':wqa\n');
-      } else if (str.includes('Deleted merge conflict')) {
-        ps.stdin.write('d\n');
-      }
-    });
-
     let stderr = '';
 
     ps.stderr.on('data', data => {
